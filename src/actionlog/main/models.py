@@ -3,6 +3,7 @@ from django.db import models
 class Action(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
     name = models.CharField(max_length=120)
+    # color = models.CharField(max_length=6)  #rgb
 
     def __unicode__(self):
         return u"Action<%s>" % self.name

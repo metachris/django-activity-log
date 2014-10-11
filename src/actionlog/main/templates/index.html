@@ -1,3 +1,13 @@
 {% extends "base.html" %}
 
-{% block body %}Hello World!{% endblock %}
+{% block head %}
+    <link href="{{ STATIC_URL }}fullcalendar-2.1.1/fullcalendar.css" rel="stylesheet" />
+    <script src='{{ STATIC_URL }}fullcalendar-2.1.1/lib/moment.min.js'></script>
+    <script src='{{ STATIC_URL }}fullcalendar-2.1.1/fullcalendar.js'></script>
+    <script src='{{ STATIC_URL }}js/index.js'></script>
+{% endblock %}
+
+{% block body %}
+    <p>{{ entry_count }} entries since {{ entry_first.date_entry }}</p>
+    <div id="calendar"></div>
+{% endblock %}

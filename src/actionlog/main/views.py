@@ -9,11 +9,21 @@ from django.contrib import auth
 from django.core.urlresolvers import reverse_lazy
 from django.conf import settings
 
-from main.models import *
-
 import datetime
 import time
 from pprint import pprint, pformat
 
+import models
+
 def index(request):
-    return render(request, 'index.html')
+    entries = list(models.LogEntry.objects.order_by("-date_entry"))
+
+    entry_first = entries[-1] if len(entries) else None
+
+    print entries
+    
+    return render(request, 'index.html', {
+        "entry_first": entry_first,
+        "entry_count": len(entries),
+        "entries": entries
+    })
