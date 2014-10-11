@@ -19,11 +19,23 @@ def index(request):
     entries = list(models.LogEntry.objects.order_by("-date_entry"))
 
     entry_first = entries[-1] if len(entries) else None
+    entry_most_recent = entries[0] if len(entries) else None
 
-    print entries
-    
+    # Calc consecutive days of entries
+    consecutive_entries = 0
+    if len(entries):
+        date_cursor = datetime.date.today()
+        for entry in entries:
+            if entry.date_entry == date_cursor:
+                consecutive_entries += 1
+                date_cursor -= datetime.timedelta(days=1)
+            else:
+                break
+
     return render(request, 'index.html', {
         "entry_first": entry_first,
+        "entry_most_recent": entry_most_recent,
         "entry_count": len(entries),
+        "consecutive_entries": consecutive_entries,
         "entries": entries
     })
