@@ -15,6 +15,11 @@ from pprint import pprint, pformat
 
 import models
 
+class ActionGroup(object):
+    def __init__(self, action, entries):
+        self.action = action
+        self.entries = entries or []
+
 def index(request):
     # Get statistical items: total-count, first entry, last entry
     num_entries = models.LogEntry.objects.count()
@@ -40,15 +45,17 @@ def index(request):
     # Sort entries into action groups
     groups = {}
     for entry in entries:
-        if entry.action in groups:
-            groups[entry.action].append(entry)
+        if entry.action.name in groups:
+            groups[entry.action.name].append(entry)
         else:
-            groups[entry.action] = [entry]
+            groups[entry.action.name] = [entry]
 
     return render(request, 'index.html', {
         "entry_first": entry_first,
         "entry_most_recent": entry_most_recent,
         "entry_count": num_entries,
         "consecutive_entries": consecutive_entries,
-        "entries": entries
+        "entries": entries,
+        "num_entries_this_month": len(entries),
+        "groups": groups,
     })
