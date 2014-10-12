@@ -57,5 +57,6 @@ def index(request):
         "consecutive_entries": consecutive_entries,
         "entries": entries,
         "num_entries_this_month": len(entries),
+        "num_days_without_entries_this_month": today.day - len(entries),
         "groups": groups,
     })

@@ -2,47 +2,87 @@
 {% load extras %}
 
 {% block head %}
+    <!-- Full Calendar JS -->
     <link href="{{ STATIC_URL }}fullcalendar-2.1.1/fullcalendar.css" rel="stylesheet" />
     <script src='{{ STATIC_URL }}fullcalendar-2.1.1/lib/moment.min.js'></script>
     <script src='{{ STATIC_URL }}fullcalendar-2.1.1/fullcalendar.js'></script>
-    <script src='{{ STATIC_URL }}js/d3-3.4.12.min.js'></script>
-    <script src='{{ STATIC_URL }}js/index.js'></script>
-    <script type="text/javascript">
-        // http://fullcalendar.io/docs/
-        // http://fullcalendar.io/docs/event_data/Event_Object
-        var calendarEvents = new Array();
-        {% for entry in entries %}
-        calendarEvents.push({
-            title: "{{ entry.action.name }}",
-            start: "{{ entry.date_entry|date:"Y-m-d" }}",
-            color: "#{{ entry.action.color }}"
-        });
-        {% endfor %}
 
+    <!-- HighCharts JS -->
+    <script src='{{ STATIC_URL }}js/highcharts/highcharts.js'></script>
+    <script src='{{ STATIC_URL }}js/highcharts/modules/exporting.js'></script>
+    <script src='{{ STATIC_URL }}js/highcharts/themes/dark-unica.js'></script>
+
+    <!-- Custom JS -->
+    <script src='{{ STATIC_URL }}js/index.js'></script>
+
+    <!-- Site Specific JS -->
+    <script type="text/javascript">
+        // Stuff to do when page is ready:
         $(document).ready(function() {
-            // page is now ready, initialize the calendar...
+            // http://fullcalendar.io/docs/
+            // http://fullcalendar.io/docs/event_data/Event_Object
             $('#calendar').fullCalendar({
                 firstDay: 1,
                 eventTextColor: "#131313",
-                events: calendarEvents,
+                events: [
+                    {% for entry in entries %}{
+                        title: "{{ entry.action.name }}",
+                        start: "{{ entry.date_entry|date:"Y-m-d" }}",
+                        color: "#{{ entry.action.color }}"
+                    },
+                    {% endfor %}
+                ],
             });
-        });    
+
+            // http://www.highcharts.com/demo/pie-legend
+            $('#charts').highcharts({
+                chart: {
+                    plotBackgroundColor: null,
+                    plotBorderWidth: 1,//null,
+                    plotShadow: false
+                },
+                title: {
+                    text: 'Activities this month'
+                },
+                tooltip: {
+                    pointFormat: '<b>{point.y} days</b>'
+                },
+                plotOptions: {
+                    pie: {
+                        allowPointSelect: true,
+                        cursor: 'pointer',
+                        dataLabels: {
+                            enabled: true,
+                            format: '<b>{point.name}</b>: {point.y} days',
+                            style: {
+                                color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                            }
+                        }
+                    }
+                },
+                series: [{
+                    type: 'pie',
+                    data: [
+                        {% for action, group_entries in groups.items %}
+                        ['{{ action }}', {{ group_entries|length }}],
+                        {% endfor %}
+                        ['no entry', {{ num_days_without_entries_this_month }}],
+                    ]
+                }]
+            });
+
+        });
     </script>
 {% endblock %}
 
 {% block body %}
     <p>{{ entry_count }} entries between {{ entry_first.date_entry }} and  {{ entry_most_recent.date_entry }}</p>
     <p>{{ consecutive_entries }} consecutive days with entries! :)</p>
+    <p>{{ num_days_without_entries_this_month }} days this month without entries</p>
 
     <div id="calendar"></div>
     <div style="clear:both;"></div>
     <p style="margin-top:20px;"><a href="/admin/main/logentry/add/">New Entry</a></p>
 
-    <p style="margin-top:20px;"><h1>Actions</h1></p>
-
-    <div class="chart">
-        {% for action, group_entries in groups.items %}
-            <div style="width:{{ group_entries|length|getPercent:num_entries_this_month }}%;">{{ action }}</div>
-        {% endfor %}
-    </div>
+    <div id="charts" style="min-width: 310px; height: 400px; max-width: 600px;"></div>
 {% endblock %}
