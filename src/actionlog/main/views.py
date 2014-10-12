@@ -16,26 +16,39 @@ from pprint import pprint, pformat
 import models
 
 def index(request):
-    entries = list(models.LogEntry.objects.order_by("-date_entry"))
+    # Get statistical items: total-count, first entry, last entry
+    num_entries = models.LogEntry.objects.count()
 
-    entry_first = entries[-1] if len(entries) else None
-    entry_most_recent = entries[0] if len(entries) else None
+    entry_first = models.LogEntry.objects.order_by("date_entry")[0] if num_entries else None
+    entry_most_recent = models.LogEntry.objects.order_by("-date_entry")[0] if num_entries else None
 
-    # Calc consecutive days of entries
+    # Get number of consecutive days with entries
     consecutive_entries = 0
-    if len(entries):
-        date_cursor = datetime.date.today()
-        for entry in entries:
-            if entry.date_entry == date_cursor:
-                consecutive_entries += 1
-                date_cursor -= datetime.timedelta(days=1)
-            else:
-                break
+    date_cursor = datetime.date.today()
+    for entry in models.LogEntry.objects.order_by("-date_entry"):
+        if entry.date_entry == date_cursor:
+            consecutive_entries += 1
+            date_cursor -= datetime.timedelta(days=1)
+        else:
+            break
+
+    # Get items for this month
+    today = datetime.date.today()
+    first_this_month = datetime.date(today.year, today.month, 1)
+    entries = list(models.LogEntry.objects.filter(date_entry__gte=first_this_month).order_by("-date_entry"))
+
+    # Sort entries into action groups
+    groups = {}
+    for entry in entries:
+        if entry.action in groups:
+            groups[entry.action].append(entry)
+        else:
+            groups[entry.action] = [entry]
 
     return render(request, 'index.html', {
         "entry_first": entry_first,
         "entry_most_recent": entry_most_recent,
-        "entry_count": len(entries),
+        "entry_count": num_entries,
         "consecutive_entries": consecutive_entries,
         "entries": entries
     })
