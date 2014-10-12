@@ -78,10 +78,11 @@
 {% block body %}
     <p>{{ entry_count }} entries between {{ entry_first.date_entry }} and  {{ entry_most_recent.date_entry }}</p>
     <p>{{ consecutive_entries }} consecutive days with entries! :)</p>
-    <p>{{ num_days_without_entries_this_month }} days this month without entries</p>
+    <p>This month: {{ num_entries_this_month }} days with entries, {{ num_days_without_entries_this_month }} days without</p>
 
     <div id="calendar"></div>
-    <p style="margin-top:20px;"><a href="/admin/main/logentry/add/">New Entry</a></p>
 
+    <br />
+    
     <div id="charts"></div>
 {% endblock %}
