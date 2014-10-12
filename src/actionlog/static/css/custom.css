@@ -1,17 +1,28 @@
 body {
     padding-bottom: 40px;
+    background-color: #2a2a2b;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6,
+p, span, div {
+    color: rgb(236, 236, 236);
+}
+
+.navbar-default {
+    background: inherit;
+}
+
+a, .navbar-default a, .navbar-default .navbar-brand {
+    color: rgb(236, 236, 236); 
 }
 
 #calendar {
-    max-width:500px;
+    max-width:560px;
     margin-top:40px;
 }
 
-.chart div {
-  font: 12px sans-serif;
-  background-color: steelblue;
-  text-align: right;
-  padding: 4px 10px;
-  margin: 6px 0px;
-  color: white;
+#charts {
+    min-width: 310px; 
+    height: 400px; 
+    max-width: 600px;
 }
