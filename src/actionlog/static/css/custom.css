@@ -21,6 +21,10 @@ a, .navbar-default a, .navbar-default .navbar-brand {
     margin-top:40px;
 }
 
+.fc td.fc-today {
+    background-color: #2B3C5F;
+}
+
 #charts {
     min-width: 310px; 
     height: 400px; 

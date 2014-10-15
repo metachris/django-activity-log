@@ -31,6 +31,8 @@ def index(request):
     consecutive_entries = 0
     date_cursor = datetime.date.today()
     for entry in models.LogEntry.objects.order_by("-date_entry"):
+        if entry.date_entry > date_cursor:
+            continue
         if entry.date_entry == date_cursor:
             consecutive_entries += 1
             date_cursor -= datetime.timedelta(days=1)
